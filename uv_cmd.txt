@@ -1,0 +1,2 @@
+uv add fastapi --extra standard
+uv add sqlalchemy

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "lxL6Pz3KSOmnefj",
+    "name": "J01",
+    "description": null,
+    "is_active": 1,
+    "factory_id": "VmexuunYopH4ycw"
+  },
+  {
+    "id": "Qsnc5hMQRKCVN8y",
+    "name": "J02",
+    "description": null,
+    "is_active": 1,
+    "factory_id": "VmexuunYopH4ycw"
+  },
+  {
+    "id": "IOAI6cUASquGIUL",
+    "name": "J03",
+    "description": null,
+    "is_active": 1,
+    "factory_id": "VmexuunYopH4ycw"
+  },
+  {
+    "id": "gVYUuvWlT4qiYX1",
+    "name": "J05",
+    "description": null,
+    "is_active": 1,
+    "factory_id": "VmexuunYopH4ycw"
+  },
+  {
+    "id": "vJZ9Eiu_SjC2HWr",
+    "name": "J06",
+    "description": null,
+    "is_active": 1,
+    "factory_id": "VmexuunYopH4ycw"
+  },
+  {
+    "id": "NuOEj8H2TZ6axcU",
+    "name": "J07",
+    "description": null,
+    "is_active": 1,
+    "factory_id": "VmexuunYopH4ycw"
+  },
+  {
+    "id": "5w6c2wxLROikCOB",
+    "name": "J08",
+    "description": null,
+    "is_active": 1,
+    "factory_id": "VmexuunYopH4ycw"
+  },
+  {
+    "id": "JGUPiL6oSzuelSR",
+    "name": "J09",
+    "description": null,
+    "is_active": 1,
+    "factory_id": "VmexuunYopH4ycw"
+  },
+    {
+    "id": "JGUPiL6oSzuelS1",
+    "name": "J10",
+    "description": null,
+    "is_active": 1,
+    "factory_id": "VmexuunYopH4ycw"
+  },
+    {
+    "id": "JGUPiL6oSzuelS2",
+    "name": "J11",
+    "description": null,
+    "is_active": 1,
+    "factory_id": "VmexuunYopH4ycw"
+  }
+]
