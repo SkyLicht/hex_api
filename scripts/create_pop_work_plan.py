@@ -86,5 +86,7 @@ def populate_work_plan():
     create_lines_from_json()
     create_platforms_from_json()
 
+
+
 if __name__ == "__main__":
     create_pop_work_plan_tables()

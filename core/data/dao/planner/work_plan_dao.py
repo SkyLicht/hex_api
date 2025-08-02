@@ -18,9 +18,6 @@ class WorkPlanDAO:
             self.db.rollback()
             raise e
 
-
-
-
     def get_work_plan_by_line_id_and_str_date(self, line_id: str, str_date: str) -> WorkPlanModel:
         return (self.db.query(WorkPlanModel)
                 .options(
@@ -30,8 +27,23 @@ class WorkPlanDAO:
         )
                 .filter(WorkPlanModel.line_id == line_id, WorkPlanModel.str_date == str_date).first())
 
+
+    def get_work_plan_by_str_date_and_line_name(self, str_date: str, line_name: str) -> WorkPlanModel | None:
+        orm =  (self.db.query(WorkPlanModel)
+                .options(
+            joinedload(WorkPlanModel.platform),
+            joinedload(WorkPlanModel.line),
+            joinedload(WorkPlanModel.line).joinedload(LineModel.factory)
+        )
+                .join(LineModel, WorkPlanModel.line_id == LineModel.id)
+                .filter(WorkPlanModel.str_date == str_date)
+                .filter(LineModel.name == line_name)
+                .first())
+        return orm
+
     def get_work_plan_by_line_id(self, line_id: str) -> WorkPlanModel:
-        return self.db.query(WorkPlanModel).filter(WorkPlanModel.line_id == line_id).order_by(desc(WorkPlanModel.str_date)).first()
+        return self.db.query(WorkPlanModel).filter(WorkPlanModel.line_id == line_id).order_by(
+            desc(WorkPlanModel.str_date)).first()
 
     def get_work_plans_by_str_date(self, str_date) -> List[WorkPlanModel]:
         return (self.db.query(WorkPlanModel)

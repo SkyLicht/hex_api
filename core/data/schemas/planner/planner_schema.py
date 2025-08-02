@@ -1,10 +1,8 @@
-import datetime
+
 from typing import List
-
 from pydantic import BaseModel
-
 from core.data.orm_models.work_plan_model_v1 import WorkPlanModel
-from core.data.schemas.layout.line_schema import LineSmallSchema
+
 
 
 class PlatformSchema(BaseModel):
@@ -79,26 +77,9 @@ class WorkPlanSchema(BaseModel):
             )
         )
 
+
     @staticmethod
     def work_plan_orm_list_to_schema_list(orm_list: [WorkPlanModel]) -> 'List[WorkPlanSchema]':
         return [WorkPlanSchema.work_plan_orm_to_schema(orm) for orm in orm_list]
 
 
-class WorkPlanWithRelationsSchema(BaseModel):
-    id: str
-    platform_id: str
-    line_id: str
-    planned_hours: float
-    target_oee: float
-    uph_i: int
-    start_hour: int
-    end_hour: int
-    str_date: str
-    week: int
-    head_count: int
-    ft: int
-    ict: int
-    created_at: datetime
-    updated_at: datetime
-    platform: PlatformSchema
-    line: LineSmallSchema

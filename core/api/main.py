@@ -9,6 +9,7 @@ from starlette.responses import JSONResponse
 
 from core.api.routes.layout import line_endpoint
 from core.api.routes.planner import work_plan_endpoint, platform_endpoint
+from core.api.routes.statistics import ppid_endpoint
 from core.db.ie_tool_db import IETOOLDBConnection
 
 app = FastAPI()
@@ -80,10 +81,20 @@ async def permission_error_handler(request: Request, exc: PermissionError):
 @app.exception_handler(ValueError)
 async def value_error_handler(request: Request, exc: ValueError):
 
+
     return JSONResponse(
         status_code=422,
         content={"detail": str(exc)}
     )
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail}
+    )
+
 
 
 @app.exception_handler(Exception)
@@ -122,7 +133,10 @@ app.include_router(
     prefix='/api/v1',
     router= line_endpoint.router
 )
-
+app.include_router(
+    prefix='/api/v1',
+    router= ppid_endpoint.router
+)
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}

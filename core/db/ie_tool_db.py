@@ -17,7 +17,7 @@ class IETOOLDBConnection:
 
     # For testing, consider using an in-memory SQLite database: "sqlite:///:memory:"
     # e.g., DBConnection.DATABASE_URL = "sqlite:///:memory:"
-    DATABASE_URL = "sqlite:///C:/Users/abrah/Desktop/hex_db/hwx_db.db"
+    DATABASE_URL = "sqlite:///C:/data/hex_database/hex_db.db"
 
     def __new__(cls):
         """

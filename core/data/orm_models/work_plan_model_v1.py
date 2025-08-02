@@ -1,8 +1,8 @@
 from core.db.ie_tool_db import IEToolBase
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, String, ForeignKey, Table, Boolean, DateTime, Index, Integer, Text, Float, \
-    CheckConstraint, UniqueConstraint, func, JSON, DefaultClause
+from sqlalchemy import Column, String, ForeignKey, Boolean, DateTime, Index, Integer, Float, \
+    CheckConstraint, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 
@@ -130,3 +130,11 @@ class WorkPlanModel(IEToolBase):
 
     line = relationship("LineModel", back_populates="work_plans")
     platform = relationship("PlatformModel", back_populates="work_plans")
+
+    def __repr__(self):
+        return (
+            f"<PlannerWorkPlan(id={self.id}, platform_id={self.platform_id}, line_id={self.line_id}, "
+            f"planned_hours={self.planned_hours}, target_oee={self.target_oee}, uph_i={self.uph_i}, "
+            f"start_hour={self.start_hour}, end_hour={self.end_hour}, str_date={self.str_date}, week={self.week}, "
+            f"head_count={self.head_count}, ft={self.ft}, ict={self.ict})>"
+        )
