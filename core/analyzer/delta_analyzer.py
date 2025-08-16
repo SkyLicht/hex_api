@@ -3,7 +3,7 @@ from typing import List, Dict, Any
 from collections import defaultdict
 import json
 
-class PPIDDeltaAnalyzer:
+class DeltaAnalyzer:
     """
     Analyzes PPID records to calculate time deltas between consecutive records
     and groups them by minute intervals.
@@ -23,7 +23,7 @@ class PPIDDeltaAnalyzer:
         # Sort records by timestamp (oldest first) for proper delta calculation
         self.sorted_records = sorted(
             ppid_records,
-            key=lambda x: datetime.strptime(x['timestamp'], "%Y-%m-%d %H:%M:%S")
+            key=lambda x: datetime.strptime(x['collected_timestamp'], "%Y-%m-%d %H:%M:%S")
         )
 
     def calculate_deltas(self) -> List[Dict[str, Any]]:
@@ -40,8 +40,8 @@ class PPIDDeltaAnalyzer:
             previous_record = self.sorted_records[i - 1]
             
             # Parse timestamps
-            current_time = datetime.strptime(current_record['timestamp'], "%Y-%m-%d %H:%M:%S")
-            previous_time = datetime.strptime(previous_record['timestamp'], "%Y-%m-%d %H:%M:%S")
+            current_time = datetime.strptime(current_record['collected_timestamp'], "%Y-%m-%d %H:%M:%S")
+            previous_time = datetime.strptime(previous_record['collected_timestamp'], "%Y-%m-%d %H:%M:%S")
             
             # Calculate delta in seconds
             delta_seconds = (current_time - previous_time).total_seconds()
@@ -49,8 +49,8 @@ class PPIDDeltaAnalyzer:
             delta_info = {
                 'from_ppid': previous_record['ppid'],
                 'to_ppid': current_record['ppid'],
-                'from_timestamp': previous_record['timestamp'],
-                'to_timestamp': current_record['timestamp'],
+                'from_timestamp': previous_record['collected_timestamp'],
+                'to_timestamp': current_record['collected_timestamp'],
                 'delta_seconds': int(delta_seconds),
                 'delta_minutes': round(delta_seconds / 60, 2)
             }
@@ -160,10 +160,10 @@ class PPIDDeltaAnalyzer:
         hour_groups = {str(hour): [] for hour in range(24)}  # Initialize all hours 0-23
         
         for record in self.ppid_records:
-            hour = self.get_hour_from_timestamp(record['timestamp'])
+            hour = self.get_hour_from_timestamp(record['collected_timestamp'])
             
             hour_groups[str(hour)].append({
-                'timestamp': record['timestamp'],
+                'collected_timestamp': record['collected_timestamp'],
                 'ppid': record['ppid'],
                 'model_name': record.get('model_name', ''),
                 'station_name': record.get('station_name', '')
@@ -172,7 +172,7 @@ class PPIDDeltaAnalyzer:
         # Sort each hour's records by timestamp (newest first)
         for hour in hour_groups:
             hour_groups[hour].sort(
-                key=lambda x: datetime.strptime(x['timestamp'], "%Y-%m-%d %H:%M:%S"),
+                key=lambda x: datetime.strptime(x['collected_timestamp'], "%Y-%m-%d %H:%M:%S"),
                 reverse=True
             )
         
@@ -233,7 +233,7 @@ class PPIDDeltaAnalyzer:
         hour_counts = {}
 
         for record in self.ppid_records:
-            hour = self.get_hour_from_timestamp(record['timestamp'])
+            hour = self.get_hour_from_timestamp(record['collected_timestamp'])
             hour_counts[hour] = hour_counts.get(hour, 0) + 1
 
         # Create summary list with only hours that have records
@@ -266,7 +266,7 @@ def analyze_ppid_data():
     ]
 
     # Create analyzer instance
-    analyzer = PPIDDeltaAnalyzer(sample_data)
+    analyzer = DeltaAnalyzer(sample_data)
 
     # Get JSON analysis
     json_result = analyzer.get_analysis_json()

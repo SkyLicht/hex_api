@@ -7,9 +7,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
+from core.api.routes.hour_by_hour import hbh_api_endpoint
 from core.api.routes.layout import line_endpoint
 from core.api.routes.planner import work_plan_endpoint, platform_endpoint
-from core.api.routes.statistics import ppid_endpoint
+from core.api.routes.statistics import ppid_endpoint, sfc_clone_endpoint
 from core.db.ie_tool_db import IETOOLDBConnection
 
 app = FastAPI()
@@ -136,6 +137,16 @@ app.include_router(
 app.include_router(
     prefix='/api/v1',
     router= ppid_endpoint.router
+)
+
+app.include_router(
+    prefix='/api/v1',
+    router= hbh_api_endpoint.router
+)
+
+app.include_router(
+    prefix='/api/v1',
+    router= sfc_clone_endpoint.router
 )
 @app.get("/")
 async def read_root():

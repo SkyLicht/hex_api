@@ -278,7 +278,7 @@ class SQLiteReadOnlyConnection:
             pass  # Ignore errors during cleanup
 
 # Create a global instance for use in FastAPI
-db = SQLiteReadOnlyConnection("C:\data\lbn_db\data_collector.db")  # Change the path as needed
+db = SQLiteReadOnlyConnection("C:\data\lbn_db\lllll.db")  # Change the path as needed
 
 # Dependency for FastAPI
 def get_database():

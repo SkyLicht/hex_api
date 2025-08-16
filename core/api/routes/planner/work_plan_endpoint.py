@@ -37,7 +37,13 @@ async def get_work_plans_by_str_date(
         repo: WorkPlanRepository = Depends(get_work_plan_repository),
 ):
     try:
-        return repo.get_work_plans_by_str_date(str_date)
+        _result =  repo.get_work_plans_by_str_date(str_date)
+
+        if _result:
+            return _result
+        else:
+            return {"message": "No data found. Please check the input parameters.", "data": None, "status": 404,
+                    "error": None}
     except PermissionError as e:
 
         raise HTTPException(status_code=403, detail="Permission denied.")
@@ -70,6 +76,7 @@ async def get_work_plan_by_str_date_and_line_name(str_date: str, line_name: str,
 
     finally:
         pass
+
 
 #
 # class WorkDayIDRequest(BaseModel):

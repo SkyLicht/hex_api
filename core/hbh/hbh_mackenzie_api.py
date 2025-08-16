@@ -1,7 +1,8 @@
-
+import asyncio
+import json
 import re
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import Dict, Any
 
@@ -53,6 +54,24 @@ class TransType(Enum):
 
 
 # http://10.13.89.96:83/home/reporte?entrada=2024112100&salida=202411210100&transtype=INPUT
+
+def transform_date_to_mackenzie(date_str):
+    # Parse the input string to a datetime object
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+    # Format the datetime object to the desired output string
+    return date_obj.strftime('%Y%m%d')
+
+def transform_range_of_dates(form: str, at: str)-> list[str]:
+    # Parse the input string to a datetime object
+    # And return a list of dates in the range
+    # Return a list of dates (str '%Y-%m-%d') in the range
+    form_date = datetime.strptime(form, '%Y-%m-%d')
+    at_date = datetime.strptime(at, '%Y-%m-%d')
+    date_list = []
+    while form_date <= at_date:
+        date_list.append(form_date.strftime('%Y-%m-%d'))
+        form_date += timedelta(days=1)
+    return date_list
 
 
 def url(
@@ -197,3 +216,48 @@ def print_records(records):
         print(f"{record.date:<12} {record.hour:<6} {record.smt_in:<8} {record.smt_out:<8} {record.packing:<8}")
 
 
+
+async def get_current_day_data_from_api():
+    _date = datetime.now().strftime('%Y-%m-%d')
+    responds = await api_respond_to_model(
+        get_all_day(transform_date_to_mackenzie(_date)),_date)
+
+    if responds.items() is None: return None
+
+    return json.dumps([_r.to_dict() for keys, _r in responds.items()], indent=4)
+
+
+
+if __name__ == "__main__":
+    asyncio.run(get_current_day_data_from_api())
+
+
+
+# async def main():
+#     # Define the start and end of January 2025
+#     start_date = datetime(2025, 6, 1)
+#     end_date = datetime(2025, 8, 7)
+#
+#     # Generate all the days in January 2025
+#     january_days = [start_date + timedelta(days=i) for i in range((end_date - start_date).days + 1)]
+#
+#     # Format dates as strings
+#     january_days_str = [day.strftime('%Y-%m-%d') for day in january_days]
+#     data = []
+#     for day in january_days_str:
+#         print(day)
+#
+#         responds = await api_respond_to_model(
+#             get_all_day(transform_date_to_mackenzie(day)),day)
+#         if responds.items() is None: continue
+#         for keys, records in responds.items():
+#             data.append(records.to_dict())
+#
+#
+#     df = pd.DataFrame(data)
+#     df.to_excel('humber_data.xlsx', index=False)
+#
+#     # Save to json file
+#     # import json
+#     # with open("../../data/data.json", "w") as f:
+#     #     json.dump(data, f, indent=4)

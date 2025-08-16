@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Dict, Any
 
-from core.analyzer.delta_analyzer import PPIDDeltaAnalyzer
+from core.analyzer.delta_analyzer import DeltaAnalyzer
 from core.db.ppid_record_db import SQLiteReadOnlyConnection, get_database
 
 router = APIRouter(
@@ -167,7 +167,7 @@ async def get_ppid_current_day_deltas(
         if not results:
             raise HTTPException(status_code=404, detail="No records found for the current day")
 
-        return PPIDDeltaAnalyzer(results).get_analysis_json()
+        return DeltaAnalyzer(results).get_analysis_json()
 
     except HTTPException:
         raise
