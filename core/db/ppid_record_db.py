@@ -1,6 +1,8 @@
+import configparser
 import sqlite3
 import threading
 from contextlib import contextmanager
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 import logging
 
@@ -19,12 +21,21 @@ class SQLiteReadOnlyConnection:
         Args:
             database_path (str): Path to the SQLite database file
         """
+
+        configs = configparser.ConfigParser()
+        configs.read('configs/api_config.ini')
+        if not configs.read('configs/api_config.ini'):
+            raise ValueError("Config file not found")
+
+        raw = configs.get('server_house', 'sfc_db')
+
         self.database_path = database_path
         self._local = threading.local()
         self._lock = threading.Lock()
         
         # Verify database exists and is accessible
         self._verify_database()
+
     
     def _verify_database(self):
         """Verify the database exists and is accessible."""
@@ -63,10 +74,12 @@ class SQLiteReadOnlyConnection:
                 cursor.close()
                 
                 logger.debug("Created new read-only database connection")
+                print("Created new read-only database connection")
             except sqlite3.Error as e:
                 logger.error(f"Failed to create read-only database connection: {e}")
+                print(f"Failed to create read-only database connection: {e}")
                 raise
-        
+
         return self._local.connection
     
     @contextmanager
@@ -278,7 +291,7 @@ class SQLiteReadOnlyConnection:
             pass  # Ignore errors during cleanup
 
 # Create a global instance for use in FastAPI
-db = SQLiteReadOnlyConnection("C:\data\lbn_db\lllll.db")  # Change the path as needed
+db = SQLiteReadOnlyConnection("C:\\Users\\abrah\\Desktop\\sfc_db\\lllll.db")  # Change the path as needed "C:\data\lbn_db\lllll.db"
 
 # Dependency for FastAPI
 def get_database():
