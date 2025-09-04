@@ -215,3 +215,25 @@ def get_expected_packing_query(database: SQLiteReadOnlyConnection, line_name: st
             """
 
     return database.execute_query(query, (line_name,))
+
+
+def get_data_by_day_and_line(
+        database: SQLiteReadOnlyConnection,
+        line_name: str,
+        target_date: str,
+):
+    query = """SELECT ppid,
+                      group_name,
+                      next_station,
+                      collected_timestamp,
+                      model_name,
+                      line_name,
+                      error_flag
+               FROM records_table
+               WHERE date(collected_timestamp) = ?
+                 AND line_name = ?
+               ORDER BY collected_timestamp;"""
+
+    result = database.execute_query(query, (target_date, line_name))
+
+    return result

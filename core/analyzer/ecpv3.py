@@ -5,7 +5,7 @@ from datetime import datetime
 from collections import defaultdict
 import statistics
 
-DEFAULT_STATIONS = ['PTH_INPUT', 'TOUCH_INSPECT', 'TOUCH_UP', 'ICT', 'FT', 'FINAL_VI', 'FINAL_INSPECT', 'PACKING']
+DEFAULT_STATIONS = ['PTH_INPUT', 'TOUCH_INSPECT', 'TOUCH_UP', 'ICT', 'FT1', 'FINAL_VI', 'FINAL_INSPECT', 'PACKING']
 
 def _parse_dt(v: Any) -> Optional[datetime]:
     """
@@ -69,36 +69,6 @@ def compute_hourly_ct_table(
     - Uses timestamps (ignores *_sec fields) to compute CTs between adjacent stations.
     - Counts upstream events even if downstream is missing (incomplete PPIDs).
     - Drops non-positive and extreme cycle times (> max_cycle_seconds).
-
-    Returns:
-        {
-          "meta": {...},
-          "by_date": {
-            "YYYY-MM-DD": {
-              "hours": {
-                "HH:00": {
-                  "hour": int,
-                  "station_pairs": {
-                    "FROM_to_TO": {
-                      "sample_size": int,
-                      "average_seconds": float | None,
-                      "mean_seconds": float | None,
-                      "median_seconds": float | None,
-                      "std_dev_seconds": float | None,
-                      "p25_seconds": float | None,
-                      "p75_seconds": float | None,
-                      "p90_seconds": float | None,
-                      "min_seconds": float | None,
-                      "max_seconds": float | None,
-                      "upstream_events": int,
-                      "downstream_present": int
-                    }, ...
-                  }
-                }, ...
-              }
-            }, ...
-          }
-        }
     """
     st = stations or DEFAULT_STATIONS
     pair_keys = [f"{a}_to_{b}" for a, b in zip(st[:-1], st[1:])]

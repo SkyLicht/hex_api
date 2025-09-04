@@ -14,22 +14,21 @@ class SQLiteReadOnlyConnection:
     Optimized for SELECT queries only.
     """
     
-    def __init__(self, database_path: str = "database.db"):
+    def __init__(self):
         """
         Initialize the SQLite read-only connection manager.
-        
-        Args:
-            database_path (str): Path to the SQLite database file
         """
 
         configs = configparser.ConfigParser()
         configs.read('configs/api_config.ini')
+
+
         if not configs.read('configs/api_config.ini'):
             raise ValueError("Config file not found")
 
-        raw = configs.get('server_house', 'sfc_db')
+        raw = configs.get('database', 'sfc_db')
 
-        self.database_path = database_path
+        self.database_path = raw
         self._local = threading.local()
         self._lock = threading.Lock()
         
@@ -291,7 +290,7 @@ class SQLiteReadOnlyConnection:
             pass  # Ignore errors during cleanup
 
 # Create a global instance for use in FastAPI
-db = SQLiteReadOnlyConnection("C:\\Users\\abrah\\Desktop\\sfc_db\\lllll.db")  # Change the path as needed "C:\data\lbn_db\lllll.db"
+db = SQLiteReadOnlyConnection()  # Change the path as needed "C:\data\lbn_db\lllll.db"
 
 # Dependency for FastAPI
 def get_database():

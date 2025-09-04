@@ -3,13 +3,14 @@ from typing import List, Dict, Any, Coroutine, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.params import Query
 
+from core.analyzer.data_group_by_day_and_line import group_name_by_hour_and_line
 from core.analyzer.delta_analyzer import DeltaAnalyzer
 from core.analyzer.ecpv3 import compute_hourly_ct_table
-from core.analyzer.expected_packing import calculate_expected_packing_output, analyze_hourly_production_flow
-from core.analyzer.expected_packing_v2 import analyze_hourly_cycle_times
 from core.analyzer.pcb_held import analyze_production_hiding_patterns
+from core.analyzer.wip_analyzer import wip_to_hour_summary
 from core.api.queries.sfc_queries import getCurrentDayDeltasQuery, get_wip_query, get_expected_packing_query, \
-    get_final_inspection_to_packing_by_date
+    get_final_inspection_to_packing_by_date, get_data_by_day_and_line
+from core.api.queries.sfc_queries_wip import get_wip_by_hour_and_line_and_group
 from core.db.ppid_record_db import SQLiteReadOnlyConnection, get_database
 from core.services.ECDFService import ECDFService
 
@@ -49,7 +50,6 @@ async def get_wip_by_group_and_line(
         if not result:
             return []
 
-        database.close_connection()
         return result
 
     except Exception as e:
@@ -169,3 +169,45 @@ async def get_ecdf(
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
+
+
+@router.get("/get_data_by_day_and_line")
+async def get_data_by_day(
+        date: str,
+        line_name: str,
+        database: SQLiteReadOnlyConnection = Depends(get_database),
+):
+
+    try:
+        query_data = get_data_by_day_and_line(database, line_name, date)
+
+        if not query_data:
+            raise HTTPException(status_code=404, detail="No records found for the specified criteria")
+
+        transform_data = group_name_by_hour_and_line(query_data)
+        return transform_data
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+@router.get("/get_wip_by_hour")
+async def get_wip_by_hour(
+        date: str,
+        hour: int,
+        line_name: str,
+        group_name_a: str,
+        group_name_b: str,
+        database: SQLiteReadOnlyConnection = Depends(get_database),
+):
+    try:
+
+        query_data = get_wip_by_hour_and_line_and_group(database, group_name_a,group_name_b,line_name,date,hour)
+        transform_data = wip_to_hour_summary(group_name_b,query_data)
+
+        if transform_data is None:
+            raise HTTPException(status_code=404, detail="No records found for the specified criteria")
+
+        return transform_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")

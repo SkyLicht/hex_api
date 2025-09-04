@@ -1,32 +1,13 @@
-import json
 from datetime import datetime
-from pathlib import Path
 from typing import Iterable, Dict, Any
 
-from core.db.ppid_record_db import SQLiteReadOnlyConnection
 
-def group_group_name_by_hour(
+
+def group_name_by_hour_and_line(
         records: Iterable[Dict[str, Any]],
         include_records: bool = True
 ) -> Dict[str, Any]:
-    """
-    Return shape:
-    {
-      "by_hour": {
-        "00": {
-          "<group_name>": {
-            "count": <int>,
-            "units_pass": <int>,  # error_flag == 0
-            "units_fail": <int>,  # error_flag == 1
-            "records": [ ... ]    # present only if include_records is True
-          },
-          ...
-        },
-        ...
-        "23": { ... }
-      }
-    }
-    """
+
     by_hour: Dict[str, Dict[str, Any]] = {f"{h:02d}": {} for h in range(24)}
 
     def is_fail(v: Any) -> bool:
@@ -87,30 +68,23 @@ def group_group_name_by_hour(
             for bucket in hour_groups.values():
                 bucket["records"].sort(key=lambda x: x["collected_timestamp"])
 
-    return {"by_hour": by_hour}
+    # Build 24_hours_by_group: {group_name: [ {hour: int, units_pass: int, units_fail: int}, ... ] }
+    # Ensure each group has entries for all 24 hours (0-23)
+    all_groups = set()
+    for hour_groups in by_hour.values():
+        all_groups.update(hour_groups.keys())
 
+    data: Dict[str, Any] = {}
+    for group in all_groups:
+        # Initialize 24 hours with zeros
+        data[group] = [{"hour": h, "units_pass": 0, "units_fail": 0} for h in range(24)]
 
+    # Fill counts from by_hour
+    for hour_str, hour_groups in by_hour.items():
+        h = int(hour_str)
+        for group, bucket in hour_groups.items():
+            data[group][h]["units_pass"] += int(bucket.get("units_pass", 0))
+            data[group][h]["units_fail"] += int(bucket.get("units_fail", 0))
 
-if __name__ == "__main__":
-    db = SQLiteReadOnlyConnection()
-
-    res = db.execute_query("""SELECT ppid,
-                                     group_name,
-                                     next_station,
-                                     collected_timestamp,
-                                     model_name,
-                                     line_name,
-                                     error_flag
-                              FROM records_table
-                              WHERE date(collected_timestamp) = '2025-08-20'
-                                AND line_name = 'J01'
-                              ORDER BY collected_timestamp;""")
-
-
-    resr = group_group_name_by_hour(res)
-
-    print(json.dumps(resr, indent=4))
-
-    json_str = json.dumps(resr, indent=4, ensure_ascii=False)
-    Path("output/by_hour.json").write_text(json_str, encoding="utf-8")
-
+    # logic for 24_hours_by_group
+    return {"by_hour": by_hour, "hours_by_group": data}
