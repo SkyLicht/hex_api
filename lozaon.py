@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, Optional, Counter, Mapping, List
 from zoneinfo import ZoneInfo
 
-from core.db.ppid_record_db import SQLiteReadOnlyConnection
+from core.db.sfc_clon_db import SQLiteReadOnlyConnection
 
 
 # def import_production_excel_to_sqlite(

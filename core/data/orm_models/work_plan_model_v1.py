@@ -5,7 +5,6 @@ from sqlalchemy import Column, String, ForeignKey, Boolean, DateTime, Index, Int
     CheckConstraint, UniqueConstraint
 from sqlalchemy.orm import relationship
 
-
 from core.utils.generate import generate_custom_id
 
 
@@ -137,4 +136,32 @@ class WorkPlanModel(IEToolBase):
             f"planned_hours={self.planned_hours}, target_oee={self.target_oee}, uph_i={self.uph_i}, "
             f"start_hour={self.start_hour}, end_hour={self.end_hour}, str_date={self.str_date}, week={self.week}, "
             f"head_count={self.head_count}, ft={self.ft}, ict={self.ict})>"
+        )
+
+
+class UPHRecordORM(IEToolBase):
+    __tablename__ = 'uph_records'
+
+    id = Column(String(16), primary_key=True, default=generate_custom_id)
+    platform_id = Column(String(16), ForeignKey('planner_platform.id', ondelete='CASCADE'), nullable=False)
+    line_id = Column(String(16), ForeignKey('planner_lines.id', ondelete='CASCADE'), nullable=False)
+
+    uph = Column(Integer, nullable=False)
+    target_oee = Column(Float, nullable=False)
+    start_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime, nullable=False)
+
+    __table_args__ = (
+        Index('idx_uph_records_line_id', 'line_id'),
+        Index('idx_uph_records_platform_id', 'platform_id'),
+    )
+
+    # line = relationship("LineModel", back_populates="uph_records")
+    # platform = relationship("PlatformModel", back_populates="uph_records")
+
+    def __repr__(self):
+        return (
+            f"<UPHRecords"
+            f"id={self.id}, platform_id={self.platform_id}, line_id={self.line_id}, "
+            f"uph={self.uph}, target_oee={self.target_oee}, start_date={self.start_date}, end_date={self.end_date}>"
         )

@@ -8,16 +8,17 @@ import json
 from core.data.dao.planner.facorty_dao import FactoryDAO
 from core.data.dao.planner.line_dao import LineDAO
 from core.data.dao.planner.platform_dao import PlatformDAO
-from core.data.orm_models.work_plan_model_v1 import FactoryModel, LineModel, PlatformModel, WorkPlanModel
+from core.data.orm_models.work_plan_model_v1 import FactoryModel, LineModel, PlatformModel, WorkPlanModel, UPHRecordORM
 from core.db.ie_tool_db import IETOOLDBConnection
 
 
 
-def create_pop_work_plan_tables():
+def create_tables():
     IETOOLDBConnection().create_table(FactoryModel)
     IETOOLDBConnection().create_table(LineModel)
     IETOOLDBConnection().create_table(PlatformModel)
     IETOOLDBConnection().create_table(WorkPlanModel)
+    IETOOLDBConnection().create_table(UPHRecordORM)
 
 
 
@@ -87,6 +88,6 @@ def populate_work_plan():
     create_platforms_from_json()
 
 
-
-if __name__ == "__main__":
-    create_pop_work_plan_tables()
+#
+# if __name__ == "__main__":
+#     create_pop_work_plan_tables()

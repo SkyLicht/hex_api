@@ -1,6 +1,5 @@
 import time
 
-
 from fastapi import FastAPI, Depends, HTTPException, Request
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,7 +8,7 @@ from starlette.responses import JSONResponse
 
 from core.api.routes.hour_by_hour import hbh_api_endpoint
 from core.api.routes.layout import line_endpoint
-from core.api.routes.planner import work_plan_endpoint, platform_endpoint
+from core.api.routes.planner import work_plan_endpoint, platform_endpoint, uph_record_endpoint
 from core.api.routes.statistics import ppid_endpoint, sfc_clone_endpoint
 from core.db.ie_tool_db import IETOOLDBConnection
 
@@ -24,25 +23,26 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
+
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
-
-
     db = IETOOLDBConnection().get_session()
+    # db = IETOOLDBConnection().get_scoped_session()
     # get user
     start_time = time.time()  # Record the start time of the requests
-
 
     try:
         request.state.db = db
         response = await call_next(request)
 
-    except Exception:
+    except Exception as e:
         db.rollback()
+        # print(f"Exception raised in {time.time() - start_time} seconds")
         raise
     finally:
         db.close()
     return response
+
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
@@ -72,7 +72,6 @@ async def sqlalchemy_error_handler(request: Request, exc: SQLAlchemyError):
 
 @app.exception_handler(PermissionError)
 async def permission_error_handler(request: Request, exc: PermissionError):
-
     return JSONResponse(
         status_code=403,
         content={"detail": "Permission denied."}
@@ -81,21 +80,10 @@ async def permission_error_handler(request: Request, exc: PermissionError):
 
 @app.exception_handler(ValueError)
 async def value_error_handler(request: Request, exc: ValueError):
-
-
     return JSONResponse(
         status_code=422,
         content={"detail": str(exc)}
     )
-
-@app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException):
-
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.detail}
-    )
-
 
 
 @app.exception_handler(Exception)
@@ -113,7 +101,6 @@ async def generic_exception_handler(request: Request, exc: Exception):
 
 @app.exception_handler(TypeError)
 async def type_error_handler(request: Request, exc: TypeError):
-
     return JSONResponse(
         status_code=500,
         content={"detail": "An unexpected error occurred."}
@@ -122,32 +109,39 @@ async def type_error_handler(request: Request, exc: TypeError):
 
 app.include_router(
     prefix='/api/v1',
-    router= work_plan_endpoint.router
+    router=work_plan_endpoint.router
 )
 
 app.include_router(
     prefix='/api/v1',
-    router= platform_endpoint.router
+    router=platform_endpoint.router
 )
 
 app.include_router(
     prefix='/api/v1',
-    router= line_endpoint.router
+    router=line_endpoint.router
 )
 app.include_router(
     prefix='/api/v1',
-    router= ppid_endpoint.router
+    router=ppid_endpoint.router
 )
 
 app.include_router(
     prefix='/api/v1',
-    router= hbh_api_endpoint.router
+    router=hbh_api_endpoint.router
 )
 
 app.include_router(
     prefix='/api/v1',
-    router= sfc_clone_endpoint.router
+    router=sfc_clone_endpoint.router
 )
+
+app.include_router(
+    prefix='/api/v1',
+    router=uph_record_endpoint.router
+)
+
+
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}

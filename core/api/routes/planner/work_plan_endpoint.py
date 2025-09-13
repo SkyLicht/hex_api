@@ -37,7 +37,7 @@ async def get_work_plans_by_str_date(
         repo: WorkPlanRepository = Depends(get_work_plan_repository),
 ):
     try:
-        _result =  repo.get_work_plans_by_str_date(str_date)
+        _result = repo.get_work_plans_by_str_date(str_date)
 
         if _result:
             return _result
@@ -76,7 +76,6 @@ async def get_work_plan_by_str_date_and_line_name(str_date: str, line_name: str,
 
     finally:
         pass
-
 
 #
 # class WorkDayIDRequest(BaseModel):

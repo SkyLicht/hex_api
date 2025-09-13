@@ -1,4 +1,4 @@
-from core.db.ppid_record_db import SQLiteReadOnlyConnection
+from core.db.sfc_clon_db import SQLiteReadOnlyConnection
 
 
 def get_wip_by_hour_and_line_and_group(

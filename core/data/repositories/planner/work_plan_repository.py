@@ -43,5 +43,3 @@ class WorkPlanRepository:
         if orm is None:
             raise ValueError(f"Work plan not found for date {str_date} and line {line_name}")
         return WorkPlanSchema.work_plan_orm_to_schema(orm)
-
-    

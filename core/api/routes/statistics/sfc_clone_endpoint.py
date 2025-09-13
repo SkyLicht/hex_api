@@ -11,7 +11,7 @@ from core.analyzer.wip_analyzer import wip_to_hour_summary
 from core.api.queries.sfc_queries import getCurrentDayDeltasQuery, get_wip_query, get_expected_packing_query, \
     get_final_inspection_to_packing_by_date, get_data_by_day_and_line
 from core.api.queries.sfc_queries_wip import get_wip_by_hour_and_line_and_group
-from core.db.ppid_record_db import SQLiteReadOnlyConnection, get_database
+from core.db.sfc_clon_db import SQLiteReadOnlyConnection, get_database
 from core.services.ECDFService import ECDFService
 
 router = APIRouter(

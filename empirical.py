@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterable, Dict, Any
 
-from core.db.ppid_record_db import SQLiteReadOnlyConnection
+from core.db.sfc_clon_db import SQLiteReadOnlyConnection
 
 def group_group_name_by_hour(
         records: Iterable[Dict[str, Any]],

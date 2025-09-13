@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Dict, Any
 
 from core.analyzer.delta_analyzer import DeltaAnalyzer
-from core.db.ppid_record_db import SQLiteReadOnlyConnection, get_database
+from core.db.sfc_clon_db import SQLiteReadOnlyConnection, get_database
 
 router = APIRouter(
     prefix="/ppid",

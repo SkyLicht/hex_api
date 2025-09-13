@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from core.db.ppid_record_db import SQLiteReadOnlyConnection
+from core.db.sfc_clon_db import SQLiteReadOnlyConnection
 
 
 def getCurrentDayDeltasQuery (database:SQLiteReadOnlyConnection, group_name: str, line_name: str):
