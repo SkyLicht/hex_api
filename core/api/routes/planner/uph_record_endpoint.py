@@ -44,6 +44,8 @@ async def get_uph(
         raise HTTPException(status_code=400, detail="Invalid page size")
 
     return repo.get_uph_record_page(page, page_size)
+
+
 # GET http://10.13.32.220:3010/api/v1/uph/get_uph?page=1&page_size=20
 
 
@@ -51,3 +53,16 @@ async def get_uph(
 async def delete_uph(uph_id: str, repo: UPHRecordRepository = Depends(get_uph_repository)):
     return repo.delete_uph_record(uph_id)
 
+
+@router.get("/get_unique")
+async def get_uph(repo: UPHRecordRepository = Depends(get_uph_repository)):
+    return repo.get_last_record()
+
+
+@router.get("/get_all_by_line_name/{line_name}")
+async def get_uph_by_line_name(
+        line_name: str,
+        repo: UPHRecordRepository = Depends(get_uph_repository),
+):
+    print(line_name)
+    return repo.get_all_by_line_name(line_name)

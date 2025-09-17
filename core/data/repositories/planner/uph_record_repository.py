@@ -16,3 +16,9 @@ class UPHRecordRepository:
 
     def delete_uph_record(self, uph_id: str)-> bool:
         return self.dao.delete(uph_id)
+
+    def get_last_record(self):
+        return self.dao.get_line_unique()
+
+    def get_all_by_line_name(self, line_name: str):
+        return self.dao.get_by_line_name(line_name)
