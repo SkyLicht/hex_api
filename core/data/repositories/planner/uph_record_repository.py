@@ -13,3 +13,6 @@ class UPHRecordRepository:
 
     def get_uph_record_page(self, page: int, per_page: int):
         return self.dao.get_page(page, per_page)
+
+    def delete_uph_record(self, uph_id: str)-> bool:
+        return self.dao.delete(uph_id)

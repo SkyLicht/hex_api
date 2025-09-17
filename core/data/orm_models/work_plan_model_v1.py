@@ -156,8 +156,8 @@ class UPHRecordORM(IEToolBase):
         Index('idx_uph_records_platform_id', 'platform_id'),
     )
 
-    # line = relationship("LineModel", back_populates="uph_records")
-    # platform = relationship("PlatformModel", back_populates="uph_records")
+    line = relationship("LineModel")
+    platform = relationship("PlatformModel")
 
     def __repr__(self):
         return (

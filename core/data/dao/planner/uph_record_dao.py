@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from core.data.orm_models.work_plan_model_v1 import UPHRecordORM, PlatformModel, LineModel
 
@@ -27,7 +27,24 @@ class UPHRecordDAO:
             self.db.rollback()
             raise e
 
-
-    def get_page(self, page:int,page_size:int):
+    def get_page(self, page: int, page_size: int):
         offset = (page - 1) * page_size
-        return self.db.query(UPHRecordORM).offset(offset).limit(page_size).all()
+        return self.db.query(UPHRecordORM).options(
+            joinedload(UPHRecordORM.platform),
+            joinedload(UPHRecordORM.line)
+        ).offset(offset).limit(page_size).all()
+
+
+    def delete(self, uph_id: str)-> bool:
+        uph_record = self.db.query(UPHRecordORM).get(uph_id)
+        if uph_record is None:
+            raise ValueError(f"UPH record {uph_id} does not exist")
+
+        try:
+            self.db.delete(uph_record)
+            self.db.commit()
+            return True
+        except Exception as e:
+            self.db.rollback()
+            raise e
+
